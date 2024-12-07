@@ -61,5 +61,5 @@ mvn spring-boot:run
 http://localhost:8080
 ```
 
-Licença
+## Licença
 Este projeto está licenciado sob os termos da Licença MIT. Consulte o arquivo [LICENSE](LICENSE) para obter mais detalhes.
