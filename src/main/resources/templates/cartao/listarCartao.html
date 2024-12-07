@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mostrar Cartões</title> 
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Lista dos Cartões</h1> 
+
+        <div th:if="${mensagem}" class="mensagem-servidor">
+            <p th:text="${mensagem}"></p>
+        </div>
+
+        <div id="search-container">
+            <a href="#" th:href="@{/cartao/novo}" class="btn">Novo Cartão</a> 
+            
+            <form th:action="@{/cartao/buscar}" method="get" class="search-form"> 
+                <input type="number" name="id" placeholder="Buscar por ID" required>
+                <button type="submit" class="btn">Buscar</button>
+            </form>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Número do Cartão</th>
+                    <th>Data de Vencimento</th>
+                    <th>Limite</th>
+                    <th>Tipo</th>
+                    <th>CVV</th>
+                    <th>Id da Conta</th> 
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${cartoes.empty}"> 
+                    <td colspan="8" style="text-align: center;">Nenhum cartão encontrado. Tente buscar por ID.</td> 
+                </tr>
+
+                <tr th:each="cartao : ${cartoes}"> 
+                    <td th:text="${cartao.id}">Id</td> 
+                    <td th:text="${cartao.numero}">Número do Cartão</td> 
+                    <td th:text="${cartao.dataVencimento }">Data de Vencimento</td> 
+                    <td th:text="${cartao.limite}">Limite</td> 
+                    <td th:text="${cartao.tipo}">Tipo</td> 
+                    <td th:text="${cartao.cvv}">CVV</td> 
+                    <td th:text="${cartao.conta.id}">Id da Conta</td>
+                    <td>
+                        <a th:href="@{/cartao/editar/{id}(id=${cartao.id})}" class="btn btn-edit">Editar</a> 
+                        <form th:action="@{/cartao/excluir/{id}(id=${cartao.id})}" method="post" th:onsubmit="return confirm('Deseja excluir o cartão?');" style="display:inline;">
+                            <button type="submit" class="btn btn-delete">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

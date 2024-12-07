@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mostrar Clientes</title>
+    <link th:href="@{css/styles.css}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Lista de Clientes</h1>
+
+        <div th:if="${mensagem}" class="mensagem-servidor">
+            <p th:text="${mensagem}"></p>
+        </div>
+
+        <div id="search-container">
+            <a href="#" th:href="@{/cliente/novo}" class="btn">Novo Cliente</a>
+            
+            <form th:action="@{/cliente/buscar}" method="get" class="search-form">
+                <input type="number" name="id" placeholder="Buscar por ID" required>
+                <button type="submit" class="btn">Buscar</button>
+            </form>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>Telefone</th>
+                    <th>Endereço</th>
+                    <th>Email</th>
+                    <th>Login</th>
+                    <th>Senha</th>
+                    <th>Sexo</th>
+                    <th>Data de Nascimento</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${clientes.empty}">
+                    <td colspan="11" style="text-align: center;">Nenhum cliente encontrado.</td>
+                </tr>
+
+                <tr th:each="cliente : ${clientes}">
+                    <td th:text="${cliente.id}">Id</td>
+                    <td th:text="${cliente.nome}">Nome</td>
+                    <td th:text="${cliente.cpf}">CPF</td>
+                    <td th:text="${cliente.telefone}">Telefone</td>
+                    <td th:text="${cliente.endereco}">Endereço</td>
+                    <td th:text="${cliente.email}">Email</td>
+                    <td th:text="${cliente.login}">Login</td>
+                    <td th:text="${cliente.senha}">Senha</td>
+                    <td th:text="${cliente.sexo}">Sexo</td>
+                    <td th:text="${cliente.dataNascimento}">Data de Nascimento</td>
+                    <td>
+                        <a th:href="@{cliente/editar/{id}(id=${cliente.id})}" class="btn btn-edit">Editar</a>
+                        <form th:action="@{/cliente/excluir/{id}(id=${cliente.id})}" method="post"
+                              th:onsubmit="return confirm('Deseja excluir o cliente?');" style="display:inline;">
+                            <button type="submit" class="btn btn-delete">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

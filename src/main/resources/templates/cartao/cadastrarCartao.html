@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${cartao.id != null ? 'Editar Cartão' : 'Novo Cartão'}">Cadastro de Cartão</title> 
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <h1 th:text="${cartao.id != null ? 'Editar Cartão' : 'Novo Cartão'}">Cadastro de Cartão</h1> 
+
+        <form th:action="${cartao.id != null ? '/cartao/editar/' + cartao.id : '/cartao/novo'}" th:object="${cartao}" method="post"> 
+            
+            <div>
+                <label for="id">Id:</label>
+                <input type="text" id="id" th:field="*{id}" placeholder="Digite o Id" required
+                    th:readonly="${cartao.id != null}" /> 
+            </div>
+
+            <div>
+                <label for="numero">Número do Cartão:</label>
+                <input type="text" id="numero" th:field="*{numero}" placeholder="Digite o Número do Cartão" required /> 
+            </div>
+
+            <div>
+                <label for="dataVencimento">Data de Vencimento:</label>
+                <input type="date" id="dataVencimento" th:field="*{dataVencimento}" required /> 
+            </div>
+
+            <div>
+                <label for="limite">Limite:</label>
+                <input type="number" id="limite" th:field="*{limite}" placeholder="Digite o Limite" required /> 
+            </div>
+
+            <div>
+                <label for="tipo">Tipo:</label>
+                <select id="tipo" th:field="*{tipo}" required>
+                    <option value="" disabled selected>Selecione o Tipo</option>
+                    <option value="credito">Crédito</option>
+                    <option value="debito">Débito</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="cvv">CVV:</label>
+                <input type="text" id="cvv" th:field="*{cvv}" placeholder="Digite o CVV" required /> 
+            </div>
+
+            <div>
+                <label for="conta">Id da Conta:</label>
+                <input type="text" id="conta" th:field="*{conta.id}" placeholder="Digite o Id da Conta" required /> 
+            </div>
+
+            <button type="submit" th:text="${cartao.id != null ? 'Atualizar' : 'Cadastrar'}">Cadastrar</button> 
+        </form>
+
+        <a th:href="@{/cartao}" class="btn">Voltar para a lista de Cartões</a>
+
+    </div>
+
+</body>
+
+</html>

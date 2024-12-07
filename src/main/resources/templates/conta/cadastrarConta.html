@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${conta.id != null ? 'Editar Conta' : 'Nova Conta'}">Cadastro de conta</title> 
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <h1 th:text="${conta.id != null ? 'Editar Conta' : 'Nova Conta'}">Cadastro de conta</h1> 
+
+        <form th:action="${conta.id != null ? '/conta/editar/' + conta.id : '/conta/novo'}" th:object="${conta}" method="post"> 
+            
+            <div>
+                <label for="id">Id:</label>
+                <input type="text" id="id" th:field="*{id}" placeholder="Digite o Id" required
+                    th:readonly="${conta.id != null}" /> 
+            </div>
+
+            <div>
+                <label for="tipoConta">Tipo da Conta:</label>
+                <select id="tipoConta" th:field="*{tipoConta}" required>
+                    <option value="" disabled selected>Selecione o Tipo da Conta</option>
+                    <option value="masculino">Corrente</option>
+                    <option value="feminino">Poupança</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="saldo">Saldo:</label>
+                <input type="number" id="saldo" th:field="*{saldo}" placeholder="Digite o Saldo" required /> 
+            </div>
+            
+            <div>
+                <label for="cliente">Cliente:</label>
+                <input type="text" id="cliente" th:field="*{cliente}" placeholder="Digite o Cliente" required /> 
+            </div>
+
+            <div>
+                <label for="dataCriacao">Data de Abertura da Conta:</label>
+                <input type="date" id="dataCriacao" th:field="*{dataCriacao}" required /> 
+            </div>
+            <button type="submit" th:text="${conta.id != null ? 'Atualizar' : 'Cadastrar'}">Cadastrar</button> 
+        </form>
+
+        <a th:href="@{/conta}" class="btn">Voltar para a lista de Contas</a>
+
+    </div>
+
+</body>
+
+</html>

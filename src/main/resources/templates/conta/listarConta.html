@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mostrar Contas</title> 
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Lista das Contas</h1> 
+
+        <div th:if="${mensagem}" class="mensagem-servidor">
+            <p th:text="${mensagem}"></p>
+        </div>
+
+        <div id="search-container">
+            <a href="#" th:href="@{/conta/novo}" class="btn">Nova Conta</a> 
+            
+            <form th:action="@{/conta/buscar}" method="get" class="search-form"> 
+                <input type="number" name="id" placeholder="Buscar por ID" required>
+                <button type="submit" class="btn">Buscar</button>
+            </form>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Tipo da Conta</th>
+                    <th>Saldo</th>
+                    <th>Id do Cliente</th>
+                    <th>Data Abertura</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${contas.empty}"> 
+                    <td colspan="6" style="text-align: center;">Nenhuma conta encontrada. Tente buscar por ID.</td> 
+                </tr>
+
+                <tr th:each="conta : ${contas}"> 
+                    <td th:text="${conta.id}">Id</td> 
+                    <td th:text="${conta.tipoConta}">Tipo da Conta</td> 
+                    <td th:text="${conta.saldo}">Saldo</td> 
+                    <td th:text="${conta.cliente.id}">Id do Cliente</td> 
+                    <td th:text="${conta.dataCriacao}">Data Abertura</td> 
+                    <td>
+                        <a th:href="@{/conta/editar/{id}(id=${conta.id})}" class="btn btn-edit">Editar</a> 
+                        <form th:action="@{/conta/excluir/{id}(id=${conta.id})}" method="post" th:onsubmit="return confirm('Deseja excluir a conta?');" style="display:inline;">
+                            <button type="submit" class="btn btn-delete">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
