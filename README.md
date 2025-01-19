@@ -4,12 +4,11 @@ Este projeto é um sistema de gerenciamento de clientes, contas e cartões banc�
 
 ## Funcionalidades
 
-- **Lista de Contas/Cliente/Cartão**
-- **Cadastro de Conta/Cliente/Cartão**
-- **Edição de Conta/Cliente/Cartão**
-- **Exclusão de Conta/Cliente/Cartão**
-- **Busca por ID**
-
+- **Lista de Contas/Cliente/Cartão**: Visualize todas as contas, clientes e cartões cadastrados.
+- **Cadastro de Conta/Cliente/Cartão**: Adicione novas contas, clientes e cartões ao sistema.
+- **Edição de Conta/Cliente/Cartão**: Edite informações de contas, clientes e cartões existentes.
+- **Exclusão de Conta/Cliente/Cartão**: Remova contas, clientes e cartões do sistema.
+- **Busca por ID**: Encontre contas, clientes e cartões específicos pelo ID.
 
 ## Tecnologias Utilizadas
 
@@ -18,14 +17,15 @@ Este projeto é um sistema de gerenciamento de clientes, contas e cartões banc�
 - **Spring Web**: Para construção de APIs RESTful e controle de fluxo da aplicação web.
 - **Java 17**: Linguagem de programação utilizada para desenvolver o backend.
 - **Spring DevTools**: Para melhorar a experiência de desenvolvimento com recarregamento automático da aplicação.
-
+- **MySQL**: Banco de dados relacional utilizado para armazenar os dados.
 
 ## Estrutura de Diretórios
 
 - `src/main/java/` - Contém o código Java da aplicação.
 - `src/main/resources/templates/` - Contém os templates Thymeleaf para renderização das páginas HTML.
 - `src/main/resources/static/` - Contém arquivos estáticos como CSS.
-  
+- `src/main/resources/application.properties` - Configurações da aplicação, como detalhes do banco de dados.
+
 ## Como Rodar o Projeto
 
 ### Pré-requisitos
@@ -33,6 +33,7 @@ Este projeto é um sistema de gerenciamento de clientes, contas e cartões banc�
 - JDK 17 ou superior
 - Maven (ou Gradle)
 - IDE de sua preferência (como IntelliJ IDEA, Eclipse ou VSCode)
+- MySQL
 
 ### Passos para Rodar
 
@@ -43,19 +44,23 @@ Este projeto é um sistema de gerenciamento de clientes, contas e cartões banc�
    cd Projeto-CRUD
 ``` 
 
-2. Compile o projeto utilizando Maven:
+2. Configure o banco de dados MySQL
+
+3. Configure o arquivo application.properties para o seu banco de dados
+
+4. Compile o projeto utilizando Maven:
 
 ```bash
 mvn clean install
 ```
 
-3. Execute a aplicação:
+5. Execute a aplicação:
 
 ```bash
 mvn spring-boot:run
 ```
 
-4. Acesse o sistema no navegador em:
+6. Acesse o sistema no navegador em:
 
 ```bash
 http://localhost:8080
