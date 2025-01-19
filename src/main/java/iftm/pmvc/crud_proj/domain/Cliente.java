@@ -19,6 +19,10 @@ public class Cliente {
     public Cliente() {
     }
 
+    public Cliente(Integer id) {
+        this.id = id;
+    }
+
     public Cliente(Integer id, String nome, String cpf, String telefone, String endereco, String email, String login,
             String senha, String sexo, LocalDate dataNascimento) {
         this.id = id;
@@ -67,9 +71,6 @@ public class Cliente {
     }
 
     public void setCpf(String cpf) {
-        if (cpf == null || !cpf.matches("\\d{11}")) {
-            throw new IllegalArgumentException("CPF inválido.");
-        }
         this.cpf = cpf;
     }
 

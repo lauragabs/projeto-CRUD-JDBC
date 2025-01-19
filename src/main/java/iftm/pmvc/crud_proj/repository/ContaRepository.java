@@ -1,69 +1,61 @@
 package iftm.pmvc.crud_proj.repository;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import iftm.pmvc.crud_proj.domain.Cliente;
 import iftm.pmvc.crud_proj.domain.Conta;
-import jakarta.annotation.PostConstruct;
 
 @Repository
 public class ContaRepository {
 
-    private List<Conta> contas;
+    private JdbcTemplate conexaoBanco;
 
-    @Autowired
-    private ClienteRepository clienteRepository;
-
-    public ContaRepository() {
-        this.contas = new ArrayList<>();
-    }
-
-    @PostConstruct
-    public void init() {
-        Cliente cliente0 = clienteRepository.buscarPorId(0);
-        Cliente cliente1 = clienteRepository.buscarPorId(1);
-
-        this.contas.add(new Conta(0, cliente0, "Corrente", 1524.36f, LocalDate.of(2020, 02, 16)));
-        this.contas.add(new Conta(1, cliente1, "Poupança", 3000.00f, LocalDate.of(2021, 05, 10)));
+    public ContaRepository(JdbcTemplate conexaoBanco) {
+        this.conexaoBanco = conexaoBanco;
     }
 
     public List<Conta> listar() {
-        return this.contas;
+        String sql = "SELECT id_conta, id_cliente, tipo, saldo, dataCriacao FROM Conta";
+        return conexaoBanco.query(sql, (res, rowNum) -> new Conta(
+            res.getInt("id_conta"),
+            new Cliente(res.getInt("id_cliente")),
+            res.getString("tipo"),
+            res.getFloat("saldo"),
+            res.getDate("dataCriacao").toLocalDate()
+        ));
     }
 
     public Conta buscarPorId(Integer id) {
-        for (Conta conta : this.contas) {
-            if (conta.getId() == id) {
-                return conta; 
-            }
-        }
-        return null; 
+        String sql = "SELECT id_conta, id_cliente, tipo, saldo, dataCriacao FROM Conta WHERE id_conta = ?";
+        return conexaoBanco.queryForObject(sql, new BeanPropertyRowMapper<>(Conta.class), id);
     }
 
     public void adicionar(Conta conta) {
-        contas.add(conta);
+        String sql = "INSERT INTO Conta (id_cliente, tipo, saldo, dataCriacao) VALUES (?, ?, ?, ?)";
+        conexaoBanco.update(sql, 
+            conta.getCliente().getId(), 
+            conta.getTipoConta(),
+            conta.getSaldo(),
+            conta.getDataCriacao()
+        );
     }
 
     public void deletar(Integer id) {
-        Conta contaParaRemover = buscarPorId(id);
-        if (contaParaRemover != null) {
-            contas.remove(contaParaRemover);
-        }
+        String sql = "DELETE FROM Conta WHERE id_conta = ?";
+        conexaoBanco.update(sql, id);
     }
 
     public boolean update(Conta conta) {
-        for (int i = 0; i < contas.size(); i++) {
-            Conta contaExistente = contas.get(i);
-            if (contaExistente.getId() == conta.getId()) {
-                contas.set(i, conta); 
-                return true;
-            }
-        }
-        return false;
+        String sql = "UPDATE Conta SET id_cliente = ?, tipo = ?, saldo = ?, dataCriacao = ? WHERE id_conta = ?";
+        return conexaoBanco.update(sql, 
+            conta.getCliente().getId(), 
+            conta.getTipoConta(), 
+            conta.getSaldo(),
+            conta.getDataCriacao(),
+            conta.getId()) > 0;
     }
 }

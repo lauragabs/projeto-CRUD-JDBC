@@ -11,7 +11,11 @@ public class Conta {
     public Conta() {
     }
 
-    public Conta(Integer id, Cliente cliente, String tipoConta, float saldo, LocalDate dataCriacao) { // Alterado de int para Integer
+    public Conta(Integer id) {
+        this.id = id;
+    }
+
+    public Conta(Integer id, Cliente cliente, String tipoConta, float saldo, LocalDate dataCriacao) { 
         this.id = id;
         this.tipoConta = tipoConta;
         this.saldo = saldo;
@@ -23,7 +27,7 @@ public class Conta {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (id != null ? id.hashCode() : 0); // Alterado para lidar com Integer
+        result = prime * result + (id != null ? id.hashCode() : 0); 
         return result;
     }
 

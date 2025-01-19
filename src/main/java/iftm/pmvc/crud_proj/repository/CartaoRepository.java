@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import iftm.pmvc.crud_proj.domain.Cartao; 
@@ -14,56 +16,56 @@ import jakarta.annotation.PostConstruct;
 @Repository
 public class CartaoRepository { 
 
-    private List<Cartao> cartoes; 
+    private JdbcTemplate conexaoBanco;
 
-    @Autowired
-    private ContaRepository contaRepository;
-
-    public CartaoRepository() {
-        this.cartoes = new ArrayList<>();
-    }
-
-    @PostConstruct
-    public void init() {
-        Conta conta0 = contaRepository.buscarPorId(0); 
-        Conta conta1 = contaRepository.buscarPorId(1);
-
-        this.cartoes.add(new Cartao(0, conta0, "1234-5678-9012-3456", LocalDate.of(2025, 12, 31), 5000.00f, "Crédito", 123));
-        this.cartoes.add(new Cartao(1, conta1, "9876-5432-1098-7654", LocalDate.of(2026, 11, 30), 3000.00f, "Débito", 456));
+    public CartaoRepository( JdbcTemplate conexaoBanco) {
+        this.conexaoBanco = conexaoBanco;
     }
 
     public List<Cartao> listar() {
-        return this.cartoes; 
+        String sql = "SELECT id_cartao, id_conta, numero, dataVencimento,limite, tipo, cvv FROM Cartao"; 
+        return conexaoBanco.query(sql, (res, rowNum) -> new Cartao(
+            res.getInt("id_cartao"),
+            new Conta(res.getInt("id_conta")),
+            res.getString("numero"),
+            res.getDate("dataVencimento").toLocalDate(),
+            res.getFloat("limite"),
+            res.getString("tipo"),
+            res.getInt("cvv")
+        ));
     }
 
     public Cartao buscarPorId(Integer id) {
-        for (Cartao cartao : this.cartoes) {
-            if (cartao.getId().equals(id)) { 
-                return cartao; 
-            }
-        }
-        return null; 
+        String sql = "SELECT id_cartao, id_conta, numero, dataVencimento, limite, tipo, cvv FROM Cartao WHERE id_cartao = ?";
+        return conexaoBanco.queryForObject(sql, new BeanPropertyRowMapper<>(Cartao.class), id);
     }
 
     public void adicionar(Cartao cartao) {
-        cartoes.add(cartao); 
+        String sql = "INSERT INTO Cartao (id_conta, numero, dataVencimento, limite, tipo, cvv) VALUES (?, ?, ?, ?, ?, ?)";
+        conexaoBanco.update(sql, 
+            cartao.getConta().getId(),
+            cartao.getNumero(),
+            cartao.getDataVencimento(),
+            cartao.getLimite(),
+            cartao.getTipo(),
+            cartao.getCvv()
+        );
     }
 
     public void deletar(Integer id) {
-        Cartao cartaoParaRemover = buscarPorId(id);
-        if (cartaoParaRemover != null) {
-            cartoes.remove(cartaoParaRemover); 
-        }
+        String sql = "DELETE FROM Cartao WHERE id_cartao = ?";
+        conexaoBanco.update(sql, id);
     }
 
     public boolean update(Cartao cartao) {
-        for (int i = 0; i < cartoes.size(); i++) {
-            Cartao cartaoExistente = cartoes.get(i);
-            if (cartaoExistente.getId().equals(cartao.getId())) { 
-                cartoes.set(i, cartao); 
-                return true;
-            }
-        }
-        return false;
+        String sql = "UPDATE Cartao SET id_conta = ?, numero = ?, dataVencimento = ?, limite = ?, tipo = ?, cvv = ? WHERE id_cartao = ?";
+        return conexaoBanco.update(sql, 
+            cartao.getConta().getId(),
+            cartao.getNumero(),
+            cartao.getDataVencimento(),
+            cartao.getLimite(),
+            cartao.getTipo(),
+            cartao.getCvv(),
+            cartao.getId()) > 0;
     }
 }

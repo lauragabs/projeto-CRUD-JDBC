@@ -1,9 +1,9 @@
 package iftm.pmvc.crud_proj.repository;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import iftm.pmvc.crud_proj.domain.Cliente;
@@ -11,75 +11,83 @@ import iftm.pmvc.crud_proj.domain.Cliente;
 @Repository
 public class ClienteRepository {
 
-    private List<Cliente> clientes;
+    private JdbcTemplate conexaoBanco;
 
-    public ClienteRepository() {
-        this.clientes = new ArrayList<>();
-
-        this.clientes.add(new Cliente(0, "Joana da Silva", "12345678901", "11912347895", "Rua 1, 33 , São Paulo-SP", "jojo@gmail.com", "Jojo1515", "Janela123", "Feminino", LocalDate.of(1990, 5, 25)));
-        this.clientes.add(new Cliente(1, "Carlos Pereira", "98765432100", "31998765432", "Avenida Principal, 123, Belo Horizonte-MG", "carlosp@gmail.com", "Carlos123", "SenhaCarlos", "Masculino", LocalDate.of(1985, 11, 15)));
-        
+    public ClienteRepository(JdbcTemplate conexaoBanco) {
+        this.conexaoBanco = conexaoBanco;
     }
 
     public List<Cliente> listar() {
-        return this.clientes;
+        String sql = "SELECT id_cliente, nome, cpf, telefone, endereco, email,login, senha, sexo, dataNascimento FROM Cliente";    
+        return conexaoBanco.query(sql, (res, rowNum) -> 
+        new Cliente(
+            res.getInt("id_cliente"),
+            res.getString("nome"),
+            res.getString("cpf"),
+            res.getString("telefone"),
+            res.getString("endereco"),
+            res.getString("email"),
+            res.getString("login"),
+            res.getString("senha"),
+            res.getString("sexo"),
+            res.getDate("dataNascimento").toLocalDate()
+        ));
+        
     }
 
     // Buscar por um cliente único
     public Cliente buscarPorId(Integer id) {
-        for (Cliente cliente : this.clientes) {
-            if (cliente.getId() == id) {
-                return cliente; 
-            }
-        }
-        return null; 
+        String sql = "SELECT id_cliente, nome, cpf, telefone, endereco, email,login, senha, sexo, dataNascimento FROM Cliente WHERE id_cliente = ?";
+        return conexaoBanco.queryForObject(sql, new BeanPropertyRowMapper<>(Cliente.class), id); 
     }
 
     // Buscar por nome
     public List<Cliente> buscarPorNome(String nome) {
-        List<Cliente> clienteBusca = new ArrayList<>();
-        for (Cliente cliente : this.clientes) {
-            if (cliente.getNome().toLowerCase().contains(nome.toLowerCase())) {
-                clienteBusca.add(cliente);
-            }
-        }
-        return clienteBusca;
+        String sql = "SELECT id_cliente, nome, cpf, telefone, endereco, email,login, senha, sexo, dataNascimento FROM Cliente WHERE lower(nome) LIKE ?";
+        return conexaoBanco.query(sql, new BeanPropertyRowMapper<>(Cliente.class), "%" + nome.toLowerCase() + "%");
     }
 
     //Buscar por login
     public Cliente buscarPorLogin(String login) {
-        for (Cliente cliente : clientes) {
-            if (cliente.getLogin().equals(login)) { 
-                return cliente; 
-            }
-        }
-        return null;
+        String sql = "SELECT id_cliente, nome, cpf, telefone, endereco, email,login, senha, sexo, dataNascimento FROM Cliente WHERE login = ?";
+        return conexaoBanco.queryForObject(sql, new BeanPropertyRowMapper<>(Cliente.class), login);
     }
 
     //Adicionar um novo cliente
     public void adicionar(Cliente cliente) {
-        clientes.add(cliente);
+        String sql = "INSERT INTO Cliente (nome, cpf, telefone, endereco, email, login, senha, sexo, dataNascimento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)" ;
+        conexaoBanco.update(sql, 
+            cliente.getNome(),  
+            cliente.getCpf(), 
+            cliente.getTelefone(), 
+            cliente.getEndereco(),
+            cliente.getEmail(),
+            cliente.getLogin(),
+            cliente.getSenha(),
+            cliente.getSexo(),
+            cliente.getDataNascimento()
+        );
     }
 
     //deletar um cliente
     public void deletar(Integer id) {
-        Cliente clienteParaRemover = buscarPorId(id);
-        if (clienteParaRemover != null) {
-            clientes.remove(clienteParaRemover);
-        }
+        String sql = "DELETE FROM Cliente WHERE id_cliente = ?";
+        conexaoBanco.update(sql, id);
     }
 
     // atualizar um cliente
     public boolean update(Cliente cliente) {
-        for (int i = 0; i < clientes.size(); i++) {
-            Cliente clienteExistente = clientes.get(i);
-            if (clienteExistente.getId() == cliente.getId()) {
-                clientes.set(i, cliente); 
-                return true;
-            }
-        }
-        return false;
+        String sql = "UPDATE Cliente SET nome = ?, cpf = ?, telefone = ?, endereco = ?, email = ?, login = ?, senha = ?, sexo = ?, dataNascimento = ? WHERE id_cliente = ?"; 
+        return conexaoBanco.update(sql,
+        cliente.getNome(),
+        cliente.getCpf(),
+        cliente.getTelefone(),
+        cliente.getEndereco(),
+        cliente.getEmail(),
+        cliente.getLogin(),
+        cliente.getSenha(),
+        cliente.getSexo(),
+        cliente.getDataNascimento()) > 0;
     }
-    
 
 }
